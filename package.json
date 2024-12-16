@@ -1,0 +1,39 @@
+{
+  "name": "chatbot",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun --watch index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "ollama": "^0.5.11",
+    "telegraf": "^4.16.3",
+    "zod": "^3.24.1"
+  },
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@commands/*": [
+        "commands/*"
+      ],
+      "@middlewares/*": [
+        "middlewares/*"
+      ],
+      "@services/*": [
+        "services/*"
+      ],
+      "@config/*": [
+        "config/*"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ]
+    }
+  }
+}
