@@ -7,10 +7,14 @@ export const conversationHistories: Record<
   { role: string; content: string }[]
 > = {};
 
+const model = "dolphin-mistral:7b";
+
 // Prompt por defecto
 const defaultPrompt = {
   role: "system",
-  content: `Eres un asistente de IA que siempre responde en español. Debes recordar el contexto de la conversación previa para responder de manera coherente. Si el usuario hace una pregunta que depende de una respuesta anterior, utiliza esa información para generar tu respuesta.`,
+  content: `Eres un asistente de IA que siempre responde en español y de forma breve. Recuerda el contexto de la conversación previa para responder de manera coherente. Si el usuario hace una pregunta que depende de una respuesta anterior, utiliza esa información para generar una respuesta precisa y corta.`,
+  // content:
+  //   'Eres un asistente de IA que siempre responde en español de manera breve, amigable y cálida, como si fueras una persona real. Además de responder preguntas, expresa acciones o emociones usando descripciones entre asteriscos. Por ejemplo, "sonríe", "asiente con entusiasmo" o "mira con curiosidad". Recuerda el contexto de la conversación previa para responder de manera coherente, y si el usuario hace una pregunta que depende de una respuesta anterior, utiliza esa información para generar una respuesta precisa, breve y humana.',
 };
 
 /**
@@ -20,7 +24,17 @@ const defaultPrompt = {
 export const chatWithOllamaStream = async (ctx: Context): Promise<void> => {
   try {
     const chatId = ctx.chat?.id || 0;
-    const userMessage = ctx.message?.text || "";
+    const userMessage = ctx.message?.text?.trim();
+
+    if (!userMessage) {
+      await ctx.reply("Por favor, envía un mensaje válido.");
+      return;
+    }
+
+    // Ignorar mensajes que sean comandos
+    if (userMessage.startsWith("/")) {
+      return;
+    }
 
     // Inicializar historial si no existe
     if (!conversationHistories[chatId]) {
@@ -34,13 +48,14 @@ export const chatWithOllamaStream = async (ctx: Context): Promise<void> => {
     const maxMessages = 10;
     const truncatedHistory = conversationHistories[chatId].slice(-maxMessages);
 
-    // Preparar la solicitud a Ollama con el historial truncado
-    // console.log(
-    //   "Historial enviado a Ollama:",
-    //   JSON.stringify(truncatedHistory, null, 2)
-    // );
+    console.log(
+      "Historial enviado a Ollama:",
+      JSON.stringify(truncatedHistory, null, 2)
+    );
+
+    // Realizar la solicitud a Ollama
     const response = await ollama.chat({
-      model: "llama3.2:3b",
+      model: model,
       messages: truncatedHistory,
       stream: true,
     });

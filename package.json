@@ -12,6 +12,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@huggingface/inference": "^2.8.1",
     "ollama": "^0.5.11",
     "telegraf": "^4.16.3",
     "zod": "^3.24.1"
